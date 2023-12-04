@@ -1,30 +1,40 @@
+using System.Runtime.CompilerServices;
+
+[assembly:InternalsVisibleTo("Day1.Test")]
+
 namespace Day1;
 
 public static class DigitsExtractor
 {
-  static (string Word, string Number)[] digitWords =
+  static (string Search, int Digit)[] searchDigits =
     {
-      ("one", "1one"),
-      ("two", "2two"),
-      ("three", "three"),
-      ("four", "4four"),
-      ("five", "5five"),
-      ("six", "6six"),
-      ("seven", "7seven"),
-      ("eight", "8eight"),
-      ("nine", "9nine")
+      ("0", 0),
+      ("1", 1),
+      ("2", 2),
+      ("3", 3),
+      ("4", 4),
+      ("5", 5),
+      ("6", 6),
+      ("7", 7),
+      ("8", 8),
+      ("9", 9),
+      ("one", 1),
+      ("two", 2),
+      ("three", 3),
+      ("four", 4),
+      ("five", 5),
+      ("six", 6),
+      ("seven", 7),
+      ("eight", 8),
+      ("nine", 9)
     };
-
-  internal static string ReplaceDigitWords(string str) => digitWords.Aggregate(
-    str,
-    (current, p) => current.Replace(p.Word, p.Number.ToString()));
 
   public static int GetCalibrationValue(string str)
   {
-    var strWithDigits = ReplaceDigitWords(str);
-    var digits = strWithDigits.Where(char.IsDigit).ToList();
-    if (digits.Count < 1) throw new ArgumentException("No digits found.", nameof(str));
-
-    return int.Parse(new string(new[] { digits.First(), digits.Last() }));
+    var first = searchDigits.Select(x => (Index: str.IndexOf(x.Search, StringComparison.Ordinal), x.Digit))
+      .Where(x => x.Index >= 0).MinBy(x => x.Index).Digit;
+    var last = searchDigits.Select(x => (Index: str.LastIndexOf(x.Search, StringComparison.Ordinal), x.Digit))
+      .Where(x => x.Index >= 0).MaxBy(x => x.Index).Digit;
+    return first * 10 + last;
   }
 }
