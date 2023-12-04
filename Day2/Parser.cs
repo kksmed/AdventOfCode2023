@@ -8,7 +8,7 @@ public static partial class Parser
   static readonly Regex greenRegex = GreenRegex();
   static readonly Regex blueRegex = BlueRegex();
 
-  internal static Grab ParseGrab(string str)
+  static Grab ParseGrab(string str)
   {
     var redMatch = redRegex.Match(str);
     var red = redMatch.Success ? int.Parse(redMatch.Groups[1].ToString()) : 0;

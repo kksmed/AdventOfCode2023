@@ -12,8 +12,8 @@ Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
 Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green";
 
     Grab max = new(12, 13, 14);
-    var possibleGames = testInput.Split(Environment.NewLine).Select(Parser.ParseGame).Where(x => x.IsPossible(max))
-      .ToList();
+    var games = testInput.Split(Environment.NewLine).Select(Parser.ParseGame).ToList();
+    var possibleGames = games.Where(x => x.IsPossible(max)).ToList();
 
     var sum = possibleGames.Sum(x => x.GameNo);
     Assert.Multiple(
@@ -23,5 +23,8 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green";
 
           Assert.That(sum, Is.EqualTo(8));
         });
+
+    var sum2 = games.Select(x => x.Min()).Sum(x => x.Red * x.Green * x.Blue);
+    Assert.That(sum2, Is.EqualTo(2286));
   }
 }
