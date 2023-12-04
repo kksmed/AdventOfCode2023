@@ -1,4 +1,6 @@
-﻿File.ReadLines("input.txt");
+﻿using Day1;
 
-Console.WriteLine("Hello, World!");
+var sum = File.ReadLines("input.txt").Select(DigitsExtractor.GetCalibrationValue).Sum();
+
+Console.WriteLine($"Sum: {sum}");
 

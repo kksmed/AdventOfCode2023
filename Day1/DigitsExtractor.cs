@@ -2,11 +2,11 @@ namespace Day1;
 
 public static class DigitsExtractor
 {
-  public static (int, int) GetDigits(string str)
+  public static int GetCalibrationValue(string str)
   {
     var digits = str.Where(char.IsDigit).ToList();
-    if (digits.Count < 2) throw new ArgumentException("Not two digits found.", nameof(str));
+    if (digits.Count < 1) throw new ArgumentException("No digits found.", nameof(str));
 
-    return (digits.First(), digits.Last());
+    return int.Parse(new string(new[] { digits.First(), digits.Last() }));
   }
 }
