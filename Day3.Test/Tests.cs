@@ -16,7 +16,7 @@ public class Tests
 ......755.
 ...$.*....
 .664.598..";
-    var numbers = Parser.ParseToNumbers(str);
+    var numbers = Parser.ParseToNumbers(str.Split(Environment.NewLine));
 
     Assert.That(numbers.Sum(), Is.EqualTo(4361));
   }

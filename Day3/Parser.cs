@@ -2,11 +2,9 @@ namespace Day3;
 
 public static class Parser
 {
-  public static IEnumerable<int> ParseToNumbers(string str)
+  public static IEnumerable<int> ParseToNumbers(string[] lines)
   {
-    var lines = str.Split(Environment.NewLine);
-
-    var partNumbers = new List<Number>();
+    var allNumbers = new List<Number>();
 
     var numbersPreviousLine = new List<Number>(0);
     var symbolsPreviousLine = new List<Symbol>(0);
@@ -25,11 +23,12 @@ public static class Parser
           if (currentNumber is null)
           {
             currentNumber = new Number(lineNo, column, c);
+            allNumbers.Add(currentNumber);
             numbersCurrentLine.Add(currentNumber);
             if (currentSymbol is not null ||
               symbolsPreviousLine.Any(x => x.Position.Column == column - 1 || x.Position.Column == column ))
             {
-              partNumbers.Add(currentNumber);
+              currentNumber.Assign();
               currentSymbol = null;
 
             }
@@ -40,7 +39,7 @@ public static class Parser
           }
 
           if (symbolsPreviousLine.Any(x => x.Position.Column == column + 1))
-            partNumbers.Add(currentNumber);
+            currentNumber.Assign();
 
           continue;
         }
@@ -54,15 +53,11 @@ public static class Parser
 
         if (currentNumber is not null)
         {
-          partNumbers.Add(currentNumber);
+          currentNumber.Assign();
           currentNumber = null;
         }
-        else
-        {
-          var number = numbersPreviousLine.FirstOrDefault(x => x.IsAdjacentTo(column));
-          if (number is not null)
-            partNumbers.Add(number);
-        }
+        foreach (var number in numbersPreviousLine.Where(x => x.IsAdjacentTo(column)))
+            number.Assign();
 
         currentSymbol = new Symbol((lineNo, column), c);
         symbolsCurrentLine.Add(currentSymbol);
@@ -72,35 +67,13 @@ public static class Parser
       symbolsPreviousLine = symbolsCurrentLine;
     }
 
-    return partNumbers.Select(x => x.Value);
+    Console.WriteLine("Unassigned:");
+    foreach (var number in allNumbers.Where(x => !x.Assigned))
+    {
+      Console.WriteLine(number);
+    }
+    return allNumbers.Where(x => x.Assigned).Select(x => x.Value);
   }
-}
-
-class Number
-{
-  readonly List<char> digits = new();
-  readonly int line, start;
-  int end;
-
-  public (int Line, int Start, int End) Positions => (line, start, end);
-
-  public int Value => int.Parse(digits.ToArray());
-
-  public Number(int line, int startPosition, char startDigit)
-  {
-    this.line = line;
-    start = startPosition;
-    end = startPosition;
-    digits.Add(startDigit);
-  }
-
-  public void Add(char digit)
-  {
-    end++;
-    digits.Add(digit);
-  }
-
-  public bool IsAdjacentTo(int column) => column >= start - 1 && column <= end + 1;
 }
 
 record Symbol((int Line, int Column) Position, char SymbolChar);

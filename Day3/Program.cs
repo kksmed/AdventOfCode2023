@@ -2,7 +2,7 @@
 
 using Day3;
 
-var str = File.ReadAllText("input.txt");
-var numbers = Parser.ParseToNumbers(str);
+var lines = File.ReadAllLines("input3.txt");
+var numbers = Parser.ParseToNumbers(lines);
 var sum = numbers.Sum();
-Console.WriteLine($"Sum: {sum}");
+Console.WriteLine($"Day 3 part 1 sum = {sum}");
