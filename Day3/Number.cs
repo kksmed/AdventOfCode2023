@@ -5,7 +5,7 @@
 
 namespace Day3;
 
-class Number
+public class Number
 {
   readonly List<char> digits = new();
   readonly int line, start;
@@ -33,11 +33,12 @@ class Number
 
   public bool IsAdjacentTo(int column) => column >= start - 1 && column <= end + 1;
 
-  public void Assign()
+  public void Assign(Symbol s)
   {
     if (Assigned)
       throw new InvalidOperationException($"Number {this} has already been assigned.");
 
+    s.Numbers.Add(this);
     Assigned = true;
   }
 

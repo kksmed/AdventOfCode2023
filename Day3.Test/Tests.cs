@@ -16,8 +16,12 @@ public class Tests
 ......755.
 ...$.*....
 .664.598..";
-    var numbers = Parser.ParseToNumbers(str.Split(Environment.NewLine));
+    var (numbers, gears) = Parser.ParseToNumbers(str.Split(Environment.NewLine));
 
     Assert.That(numbers.Sum(), Is.EqualTo(4361));
+
+    var sumOfGearRatios = gears.Sum(x => x.Numbers[0].Value * x.Numbers[1].Value);
+
+    Assert.That(sumOfGearRatios, Is.EqualTo(467835));
   }
 }

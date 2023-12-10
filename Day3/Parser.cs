@@ -2,9 +2,10 @@ namespace Day3;
 
 public static class Parser
 {
-  public static IEnumerable<int> ParseToNumbers(string[] lines)
+  public static (IEnumerable<int> PartNumbers, IEnumerable<Symbol> Gears) ParseToNumbers(string[] lines)
   {
     var allNumbers = new List<Number>();
+    var allSymbols = new List<Symbol>();
 
     var numbersPreviousLine = new List<Number>(0);
     var symbolsPreviousLine = new List<Symbol>(0);
@@ -23,23 +24,26 @@ public static class Parser
           if (currentNumber is null)
           {
             currentNumber = new Number(lineNo, column, c);
-            allNumbers.Add(currentNumber);
             numbersCurrentLine.Add(currentNumber);
-            if (currentSymbol is not null ||
-              symbolsPreviousLine.Any(x => x.Position.Column == column - 1 || x.Position.Column == column ))
-            {
-              currentNumber.Assign();
-              currentSymbol = null;
+            allNumbers.Add(currentNumber);
 
+            if (currentSymbol is not null)
+            {
+              currentNumber.Assign(currentSymbol);
+              currentSymbol = null;
             }
+
+            foreach (var symbol in symbolsPreviousLine.Where(
+              x => x.Position.Column == column - 1 || x.Position.Column == column))
+              currentNumber.Assign(symbol);
           }
           else
           {
             currentNumber.Add(c);
           }
 
-          if (symbolsPreviousLine.Any(x => x.Position.Column == column + 1))
-            currentNumber.Assign();
+          foreach (var symbol in symbolsPreviousLine.Where(x => x.Position.Column == column + 1))
+            currentNumber.Assign(symbol);
 
           continue;
         }
@@ -51,29 +55,30 @@ public static class Parser
           continue;
         }
 
+        currentSymbol = new Symbol((lineNo, column), c);
+        symbolsCurrentLine.Add(currentSymbol);
+        allSymbols.Add(currentSymbol);
+
         if (currentNumber is not null)
         {
-          currentNumber.Assign();
+          currentNumber.Assign(currentSymbol);
           currentNumber = null;
         }
         foreach (var number in numbersPreviousLine.Where(x => x.IsAdjacentTo(column)))
-            number.Assign();
-
-        currentSymbol = new Symbol((lineNo, column), c);
-        symbolsCurrentLine.Add(currentSymbol);
+            number.Assign(currentSymbol);
       }
 
       numbersPreviousLine = numbersCurrentLine;
       symbolsPreviousLine = symbolsCurrentLine;
     }
 
-    Console.WriteLine("Unassigned:");
-    foreach (var number in allNumbers.Where(x => !x.Assigned))
-    {
-      Console.WriteLine(number);
-    }
-    return allNumbers.Where(x => x.Assigned).Select(x => x.Value);
+    return (allNumbers.Where(x => x.Assigned).Select(x => x.Value),
+      allSymbols.Where(x => x is { SymbolChar: '*', Numbers.Count: 2 }));
   }
 }
 
-record Symbol((int Line, int Column) Position, char SymbolChar);
+public record Symbol((int Line, int Column) Position, char SymbolChar)
+{
+  public List<Number> Numbers { get; } = new();
+}
+
