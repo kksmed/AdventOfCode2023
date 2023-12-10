@@ -11,7 +11,20 @@ public static class Parser
     {
       if (plantField.Seeds.Count == 0)
       {
-        plantField.Seeds.AddRange(line.Split(" ").Skip(1).Select(long.Parse));
+        long? start = null;
+        foreach (var n in line.Split(" ").Skip(1))
+        {
+          if (start is null)
+          {
+            start = long.Parse(n);
+            continue;
+          }
+
+          plantField.Seeds.AddRange(LongRange(start.Value, long.Parse(n)));
+          start = null;
+        }
+
+        if (start is not null) throw new InvalidOperationException("Mismatch in seed numbers.");
         continue;
       }
 
@@ -38,5 +51,11 @@ public static class Parser
     }
 
     return plantField;
+  }
+
+  static IEnumerable<long> LongRange(long start, long count)
+  {
+    for (var i = start; i < start + count; i++)
+      yield return i;
   }
 }

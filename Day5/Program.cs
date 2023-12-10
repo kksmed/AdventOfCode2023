@@ -36,7 +36,7 @@ humidity-to-location map:
 
 var testConversions = Parser.ParseAlmanac(test, Environment.NewLine).Convert();
 Console.WriteLine("Test:");
-Console.WriteLine(string.Join(Environment.NewLine, testConversions));
+Console.WriteLine(testConversions.Single(x => x.Location == 46));
 
 var minLocation = Parser.ParseAlmanac(File.ReadAllText("input5.txt"), "\n").Convert().MinBy(x => x.Location);
 Console.WriteLine($"Lowest location number: {minLocation.Location}");
