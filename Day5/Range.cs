@@ -1,10 +1,6 @@
 namespace Day5;
 
-public record Range(long DestinationStart, long SourceStart, int Length)
+public record Range(long Start, long Length)
 {
-  public bool InRange(long source) => SourceStart <= source && source <= SourceStart + Length - 1;
-
-  public long Convert(long source) => source + DestinationStart - SourceStart;
-
-  public static readonly Range Default = new(-1, -1, 0);
+  public long End => Start + Length - 1;
 }

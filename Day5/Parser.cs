@@ -20,7 +20,7 @@ public static class Parser
             continue;
           }
 
-          plantField.Seeds.AddRange(LongRange(start.Value, long.Parse(n)));
+          plantField.Seeds.Add(new(start.Value, long.Parse(n)));
           start = null;
         }
 
@@ -47,15 +47,9 @@ public static class Parser
       if (currentMap == null)
         throw new InvalidOperationException($"No current map at: {line}");
 
-      currentMap.Add(new Range(numbers[0], numbers[1], (int)numbers[2]));
+      currentMap.Add(new RangeMap(numbers[0], numbers[1], (int)numbers[2]));
     }
 
     return plantField;
-  }
-
-  static IEnumerable<long> LongRange(long start, long count)
-  {
-    for (var i = start; i < start + count; i++)
-      yield return i;
   }
 }
