@@ -2,20 +2,19 @@ namespace Day7;
 
 public static class Parser
 {
-  const char joker = 'J';
-
-  public static Bet ParseBet(string line)
+  public static Bet ParseBet(string line, bool withJokers = false)
   {
     var split = line.Split(" ");
     if (split.Length != 2) throw new ArgumentException($"Unknown format: {line}", nameof(line));
 
-    return new Bet(new Hand(split[0]), int.Parse(split[1]));
+    return new Bet(new Hand(split[0], withJokers), int.Parse(split[1]));
   }
 
-  public static HandTypes ParseRank(string cards)
+  public static HandTypes ParseRank(string cards, bool withJokers)
   {
-    var jokers = cards.Count(x => x == joker);
-    var grouped = cards.Where(x => x != joker).GroupBy(x => x).OrderByDescending(x => x.Count()).ToList();
+    var jokers = withJokers ? cards.Count(x => x == Hand.Joker) : 0;
+    var grouped = cards.Where(x => !(withJokers && x == Hand.Joker)).GroupBy(x => x).OrderByDescending(x => x.Count())
+      .ToList();
 
     if (grouped.Count < 2) return HandTypes.FiveOfAKind;
 

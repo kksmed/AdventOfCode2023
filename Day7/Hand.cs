@@ -2,14 +2,17 @@ namespace Day7;
 
 public record Hand : IComparable<Hand>
 {
+  public const char Joker = 'J';
+  readonly bool withJokers;
   string Cards { get; }
 
   HandTypes Rank { get; }
 
-  public Hand(string cards)
+  public Hand(string cards, bool withJokers)
   {
-    this.Cards = cards;
-    Rank = Parser.ParseRank(cards);
+    this.withJokers = withJokers;
+    Cards = cards;
+    Rank = Parser.ParseRank(cards, withJokers);
   }
 
   public int CompareTo(Hand? other)
@@ -24,15 +27,18 @@ public record Hand : IComparable<Hand>
   int CompareHands(string otherCards) =>
     Cards.Select((c, i) => CompareCards(c, otherCards[i])).FirstOrDefault(x => x != 0, 0);
 
-  static int CompareCards(char x, char y) => CardRank(x).CompareTo(CardRank(y));
+  int CompareCards(char x, char y) => CardRank(x).CompareTo(CardRank(y));
 
-  static int CardRank(char c)
+  int CardRank(char c)
   {
+    if (withJokers && c == Joker) return 1;
+
     return c switch
       {
         'A' => 14,
         'K' => 13,
         'Q' => 12,
+        'J' => 11,
         'T' => 10,
         '9' => 9,
         '8' => 8,
@@ -42,7 +48,6 @@ public record Hand : IComparable<Hand>
         '4' => 4,
         '3' => 3,
         '2' => 2,
-        'J' => 1,
         _ => throw new ArgumentOutOfRangeException(nameof(c), c, "Unknown card")
       };
   }
