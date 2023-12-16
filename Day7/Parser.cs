@@ -2,6 +2,8 @@ namespace Day7;
 
 public static class Parser
 {
+  const char joker = 'J';
+
   public static Bet ParseBet(string line)
   {
     var split = line.Split(" ");
@@ -12,11 +14,12 @@ public static class Parser
 
   public static HandTypes ParseRank(string cards)
   {
-    var grouped = cards.GroupBy(x => x).OrderByDescending(x => x.Count()).ToList();
+    var jokers = cards.Count(x => x == joker);
+    var grouped = cards.Where(x => x != joker).GroupBy(x => x).OrderByDescending(x => x.Count()).ToList();
 
-    if (grouped.Count == 1) return HandTypes.FiveOfAKind;
+    if (grouped.Count < 2) return HandTypes.FiveOfAKind;
 
-    var mostOfAKind = grouped[0].Count();
+    var mostOfAKind = grouped[0].Count() + jokers;
     var secondMostOfAKind = grouped[1].Count();
 
     return mostOfAKind switch
