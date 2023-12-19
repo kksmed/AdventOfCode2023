@@ -55,15 +55,16 @@ Node[] GetAllStartNodes(IEnumerable<Node> x) => x.Where(n => n.Id.EndsWith(start
 
 bool IsAllAtEnd(Node[] x) => x.All(n => n.Id.EndsWith(endSuffix));
 
-int FindDistance((string Directions, IEnumerable<Node> Nodes) data, Func<IEnumerable<Node>, Node[]> startFun, Func<Node[], bool> endFun)
+long FindDistance((string Directions, IEnumerable<Node> Nodes) data, Func<IEnumerable<Node>, Node[]> startFun, Func<Node[], bool> endFun)
 {
   var map = data.Nodes.ToDictionary(x => x.Id, x => x);
   var currents = startFun(map.Values);
-  var distance = 0;
-  var t = 0;
+  var starts = currents.ToArray();
+  var logs = starts.Select(x => new Log(x)).ToArray();
+  var distance = 0L;
   while (!endFun(currents))
   {
-    var turn = data.Directions[t];
+    var turn = data.Directions[(int)(distance % data.Directions.Length)];
     for (var i = 0; i < currents.Length; i++)
     {
       var current = currents[i];
@@ -71,11 +72,52 @@ int FindDistance((string Directions, IEnumerable<Node> Nodes) data, Func<IEnumer
     }
 
     distance++;
-    t++;
-    if (t == data.Directions.Length) t = 0;
-    if (distance % 1e6 == 0) Console.WriteLine($"Distance: {distance}");
+
+    foreach (var (node, i) in currents.Select((x, i) => (Node: x, I: i)).Where(x => x.Node.Id.EndsWith(endSuffix)))
+    {
+      var log = logs[i];
+      if (log.Start2End.HasValue)
+      {
+        log.End2End ??= distance - log.Start2End;
+      }
+      else
+      {
+        log.Start2End = distance;
+      }
+
+      log.Ends.Add(node);
+    }
+
+    if (logs.All(x => x.End2End.HasValue))
+    {
+      return logs.Aggregate(1L, (total, log) => FindLcm(total, log.Start2End!.Value));
+    }
   }
 
   return distance;
 }
 
+static long FindGcf(long a, long b)
+{
+  while (b != 0)
+  {
+    var temp = b;
+    b = a % b;
+    a = temp;
+  }
+
+  return a;
+}
+
+static long FindLcm(long a, long b)
+{
+  return a / FindGcf(a, b) * b;
+}
+
+
+record Log(Node Start)
+{
+  public long? Start2End { get; set; }
+  public long? End2End { get; set; }
+  public List<Node> Ends { get; } = new();
+}
