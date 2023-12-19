@@ -4,13 +4,23 @@ namespace Day8;
 
 public static partial class Parser
 {
+  static readonly Regex directionsRegex = DirectionsRegex();
   static readonly Regex nodeRegex = NodeRegex();
 
-  public static (string, IEnumerable<Node>) ParseMap(string[] lines)
+  public static (string Directions, IEnumerable<Node> Nodes) ParseMap(string[] lines)
   {
     if (lines.Length < 3) throw new ArgumentException("Too few lines");
 
-    return (lines[0], lines.Skip(2).Select(ParseNode));
+    return (ParseDirections(lines[0]), lines.Skip(2).Select(ParseNode));
+  }
+
+  static string ParseDirections(string str)
+  {
+    var match = directionsRegex.Match(str);
+    if (!match.Success)
+      throw new ArgumentException($"No directions! ({str})", nameof(str));
+
+    return match.Groups[0].Captures.Single().Value;
   }
 
   static Node ParseNode(string str)
@@ -27,6 +37,9 @@ public static partial class Parser
 
     [GeneratedRegex(@"^(\w+) = \((\w+), (\w+)\)$")]
     private static partial Regex NodeRegex();
+
+    [GeneratedRegex("(L|R)+")]
+    private static partial Regex DirectionsRegex();
 }
 
 public record Node(string Id, string Left, string Right);
