@@ -2,28 +2,28 @@
 
 using Day12;
 
-var testInput = """
-                ???.### 1,1,3
-                .??..??...?##. 1,1,3
-                ?#?#?#?#?#?#?#? 1,3,1,6
-                ????.#...#... 4,1,1
-                ????.######..#####. 1,6,5
-                ?###???????? 3,2,1
-                """;
+const string testInput = """
+                         ???.### 1,1,3
+                         .??..??...?##. 1,1,3
+                         ?#?#?#?#?#?#?#? 1,3,1,6
+                         ????.#...#... 4,1,1
+                         ????.######..#####. 1,6,5
+                         ?###???????? 3,2,1
+                         """;
 var sw = Stopwatch.StartNew();
-var test1 = Alt.Part1(testInput.Split(Environment.NewLine));
+var test1 = Alt.Part1WithCache(testInput.Split(Environment.NewLine));
 Console.WriteLine($"{nameof(test1)}: {test1} in ({sw.Elapsed})");
 
 sw = Stopwatch.StartNew();
-var part1 = Alt.Part1(File.ReadAllLines("input12.txt"));
+var part1 = Alt.Part1WithCache(File.ReadAllLines("input12.txt"));
 Console.WriteLine($"{nameof(part1)}: {part1} in ({sw.Elapsed})");
 
 sw = Stopwatch.StartNew();
-var test2 = Alt.Part2(testInput.Split(Environment.NewLine));
+var test2 = Alt.Part2WithCache(testInput.Split(Environment.NewLine));
 Console.WriteLine($"{nameof(test2)}: {test2} in ({sw.Elapsed})");
 
 sw = Stopwatch.StartNew();
-var part2 = Alt.Part2(File.ReadAllLines("input12.txt"));
+var part2 = Alt.Part2WithCache(File.ReadAllLines("input12.txt"));
 Console.WriteLine($"{nameof(part2)}: {part2} in ({sw.Elapsed})");
 
 return;
